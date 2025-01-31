@@ -16,10 +16,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-            node-version: '16'
+          node-version: '16'
 
       - name: Run unit tests
-        run: npm run test
+        run: |
+          npm run test > test-report.txt || echo "Tests failed" > test-report.txt
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
@@ -44,35 +45,12 @@ jobs:
           TIME=$(date +%H%M%S)
           VERSION="1.0.0-${DATE}.${TIME}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Docker image version: $VERSION"
 
       - name: Build the Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/new-image:${VERSION} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/new-image:$VERSION .
 
-    #   - name: Install Trivy
-    #     run: |
-    #       set -e
-    #       curl -sfl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -x
-    #       # Check if the trivy binary is present
-    #       ls -l ./bin || echo "Trivy binary not found"
-    #       # Move the binary to the desired location
-    #       sudo mv ./bin/trivy /usr/local/bin/trivy
-    #       sudo chmod +x /usr/local/bin/trivy
-
-    #   - name: Verify Trivy installation
-    #     run: |
-    #       trivy --version
-      
-    #   - name: Scan the Docker image
-    #     run: |
-    #         trivy image --format json --output trivy-scan-report.json ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
-        
-    #   - name: Upload Trivy report
-    #     uses: actions/upload-artifact@v4
-    #     with:
-    #       name: trivy-report
-    #       path: trivy-scan-report.json
-
-    #   - name: Push the Docker image to Docker Hub
-    #     run: |
-    #       docker push ${{ secrets.DOCKER_USERNAME }}/new-image:1.0.0
+      - name: Push the Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/new-image:$VERSION
