@@ -39,20 +39,20 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set Version with date-time
-        run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          VERSION="v${TIMESTAMP}_${RANDOM}"
-          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+      # - name: Set Version with date-time
+      #   run: |
+      #     TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+      #     VERSION="v${TIMESTAMP}_${RANDOM}"
+      #     echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
 
 
       - name: Build the Docker image
         env:
           username: ${{ secrets.DOCKER_USERNAME }}
           image_name: new-image
-          version: ${{ env.VERSION }}
+          version: 1.0.0
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/$image_name:${{ env.VERSION }} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/$image_name:$version .
 
       - name: upload artifact for the image
         uses: actions/upload-artifact@v4
@@ -63,7 +63,7 @@ jobs:
 
       - name: Push the Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/new-image:${{ env.VERSION }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/$image_name:$version
 
   Deploy:
     name: Run image as a container
@@ -72,6 +72,7 @@ jobs:
     env:
       username: ${{ secrets.DOCKER_USERNAME }}
       image_name: new-image
+      version: 1.0.0
 
     steps:
       - name: Download artifact
@@ -82,4 +83,4 @@ jobs:
 
       - name: Run the container
         run: |
-          docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/new-image:${{ env.VERSION }}
+          docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/$image_name:$version
