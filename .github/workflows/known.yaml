@@ -54,3 +54,18 @@ jobs:
       - name: Push the Docker image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/new-image:$VERSION
+
+  Deploy:
+    name: Run image as a container
+    runs-on: self-hosted
+    needs: test-and-build # This job depends on the previous one
+    steps:
+      - name: Download artifact for deployment
+        uses: actions/download-artifact@v4
+        with:
+          name: test-report
+          path: .
+      - name: Run the image as a container
+        run: |
+          docker run -d -p 3001:3000 ${{ secrets.DOCKER_USERNAME }}/new-image:${{ env.VERSION }}
+    
