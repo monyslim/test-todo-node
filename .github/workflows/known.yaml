@@ -86,5 +86,9 @@ jobs:
           path: ./
 
       - name: Run the container
+        env:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          image_name: new-image
+          version: 1.0.0
         run: |
           docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/$image_name:$version
