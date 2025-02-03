@@ -92,3 +92,17 @@ jobs:
           version: 1.0.0
         run: |
           docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/$image_name:$version
+
+      - name: Send email notification
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: Deployment successful
+          to: "prcenturionboy@gmail.com"
+          from: "Mr Lawal"
+          message: |
+            Deployment of ${{ secrets.DOCKER_USERNAME }}/$image_name:$version was successful
