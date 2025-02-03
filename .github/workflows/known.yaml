@@ -42,7 +42,7 @@ jobs:
       - name: Set Version with date-time
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          VERSION="v${TIMESTAMP}"_${RANDOM}"
+          VERSION="v${TIMESTAMP}_${RANDOM}"
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
 
 
