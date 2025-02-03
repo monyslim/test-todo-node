@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
-          path: ${{ secrets.DOCKER_USERNAME }}/new-image:$VERSION
+          path: ./
           
 
       - name: Push the Docker image
@@ -78,7 +78,7 @@ jobs:
       - name: Download artifact for deployment
         uses: actions/download-artifact@v4
         with:
-          name: test-report
+          name: docker-image
           path: .
       - name: Run the image as a container
         run: |
