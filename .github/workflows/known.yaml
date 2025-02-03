@@ -52,7 +52,7 @@ jobs:
           image_name: new-image
           version: ${{ env.VERSION }}
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/new-image:${{ env.VERSION }} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/$image_name:${{ env.VERSION }} .
 
       - name: upload artifact for the image
         uses: actions/upload-artifact@v4
