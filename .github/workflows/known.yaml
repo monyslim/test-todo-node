@@ -74,14 +74,14 @@ jobs:
       username: ${{ secrets.DOCKER_USERNAME }}
       image_name: new-image
       version: $VERSION
+
     steps:
-      - name: Download artifact for deployment
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: docker-image
-          path: .
-      - name: Run the image as a container
+          path: ./
+
+      - name: Run the container
         run: |
-          # echo "running container with the image: ${{ secrets.DOCKER_USERNAME }}/new-image:${{ needs.test-and-build.outputs.VERSION }}"
-          docker run -d -p 3001:3000 ${{ secrets.DOCKER_USERNAME }}/new-image:$version
-    
+          docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/new-image:$VERSION
