@@ -48,8 +48,19 @@ jobs:
           echo "Docker image version: $VERSION"
 
       - name: Build the Docker image
+        env:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          image_name: new-image
+          version: $VERSION
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/new-image:$VERSION .
+
+      - name: upload artifact for the image
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: ${{ secrets.DOCKER_USERNAME }}/new-image:$VERSION
+          
 
       - name: Push the Docker image
         run: |
@@ -59,6 +70,10 @@ jobs:
     name: Run image as a container
     runs-on: self-hosted
     needs: test-and-build # This job depends on the previous one
+    env:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      image_name: new-image
+      version: $VERSION
     steps:
       - name: Download artifact for deployment
         uses: actions/download-artifact@v4
@@ -67,6 +82,6 @@ jobs:
           path: .
       - name: Run the image as a container
         run: |
-          echo "running container with the image: ${{ secrets.DOCKER_USERNAME }}/new-image:${{ needs.test-and-build.outputs.VERSION }}"
-          docker run -d -p 3001:3000 ${{ secrets.DOCKER_USERNAME }}/new-image:${{ needs.test-and-build.outputs.VERSION }}
+          # echo "running container with the image: ${{ secrets.DOCKER_USERNAME }}/new-image:${{ needs.test-and-build.outputs.VERSION }}"
+          docker run -d -p 3001:3000 ${{ secrets.DOCKER_USERNAME }}/new-image:$version
     
